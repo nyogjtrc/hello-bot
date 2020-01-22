@@ -37,6 +37,9 @@ func listenCmd(bot *tgbotapi.BotAPI) {
 		switch update.Message.Command() {
 		case "chatid":
 			messageText = fmt.Sprintf("%d", update.Message.Chat.ID)
+		case "register":
+			registerChat = append(registerChat, update.Message.Chat.ID)
+			messageText = "done"
 		default:
 			messageText = "unknown command"
 		}
