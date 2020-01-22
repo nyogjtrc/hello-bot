@@ -7,9 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/spf13/viper"
 )
-
-const token = ""
 
 var registerChat = []int64{}
 
@@ -47,10 +46,22 @@ func listenCmd(bot *tgbotapi.BotAPI) {
 	}
 }
 
+func loadConfig() error {
+	viper.SetEnvPrefix("bot")
+	viper.BindEnv("token")
+	fmt.Println("token", viper.GetString("token"))
+	return nil
+}
+
 func main() {
-	bot, err := tgbotapi.NewBotAPI(token)
+	err := loadConfig()
 	if err != nil {
 		log.Panic(err)
+	}
+
+	bot, err := tgbotapi.NewBotAPI(viper.GetString("token"))
+	if err != nil {
+		log.Panic("new bot ", err)
 	}
 	bot.Debug = false
 	log.Printf("Authorized on account %s", bot.Self.UserName)
@@ -64,5 +75,5 @@ func main() {
 		})
 	})
 
-	r.Run()
+	log.Fatal(r.Run())
 }
