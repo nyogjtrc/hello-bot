@@ -78,5 +78,22 @@ func main() {
 		})
 	})
 
+	type request struct {
+		Message string `json:"message"`
+	}
+	r.POST("/say", func(c *gin.Context) {
+		req := new(request)
+		err := c.Bind(req)
+		if err != nil {
+			c.AbortWithError(400, err)
+		}
+
+		for _, id := range registerChat {
+			bot.Send(tgbotapi.NewMessage(id, req.Message))
+		}
+
+		c.JSON(200, nil)
+	})
+
 	log.Fatal(r.Run())
 }
